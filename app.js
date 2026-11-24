@@ -274,6 +274,10 @@ function procesarVenta(tipo) {
     minute: "2-digit"
   });
 
+  const resumenItems = itemsVendidos
+    .map((item) => `${item.nombre} x${item.cantidad}`)
+    .join(", ");
+
   if (tipo === "contado") {
     estado.ventas.unshift({
       id: Date.now() + Math.floor(Math.random() * 1000),
@@ -285,7 +289,7 @@ function procesarVenta(tipo) {
       items: itemsVendidos,
       estado: "activa"
     });
-    alert(`Venta al contado registrada por ${bs(total)}`);
+    alert(`Venta al contado registrada: ${resumenItems} — ${bs(total)}`);
   } else {
     estado.fiados.unshift({
       id: Date.now() + Math.floor(Math.random() * 1000),
@@ -296,7 +300,7 @@ function procesarVenta(tipo) {
       items: itemsVendidos,
       pagado: false
     });
-    alert(`Fiado registrado a nombre de ${cliente} por ${bs(total)}`);
+    alert(`Fiado registrado a nombre de ${cliente} (${resumenItems}) por ${bs(total)}`);
   }
 
   estado.carrito = [];
