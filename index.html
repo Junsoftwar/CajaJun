@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CajaJun | Sistema para Tiendas</title>
+  <meta name="description" content="CajaJun: Aplicación de punto de venta y inventario para tiendas. Desarrollado por Junsoftwar." />
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="theme-color" content="#0f4c81" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span id="nombre-tienda">Tienda</span>
+      <small><strong class="marca-cajajun"><span class="marca-caja">Caja</span><span class="marca-jun">Jun</span></strong></small>
+    </div>
+
+    <nav class="tabs" aria-label="Secciones principales">
+      <button type="button" class="tab-btn activa" data-tab="caja">Caja</button>
+      <button type="button" class="tab-btn" data-tab="productos">Productos</button>
+      <button type="button" class="tab-btn" data-tab="reportes">Ventas y Fiados</button>
+      <button type="button" class="tab-btn" data-tab="qr">QR</button>
+    </nav>
+
+    <div class="resumen-top">
+      <div>Ventas: <strong id="top-ventas">Bs. 0.00</strong></div>
+      <div>Ganancia: <strong id="top-ganancia">Bs. 0.00</strong></div>
+      <div>Fiados: <strong id="top-fiados">Bs. 0.00</strong></div>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <!-- PESTAÑA 1: CAJA -->
+    <section id="tab-caja" class="vista activa">
+      <div class="layout-caja">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Catálogo rápido</h2>
+            <input type="search" id="buscador" placeholder="Buscar producto..." />
+          </div>
+          <div id="lista-productos-caja" class="grid-productos"></div>
+        </div>
+
+        <aside class="panel">
+          <h2>Venta actual</h2>
+          <ul id="lista-carrito" class="lista-carrito"></ul>
+
+          <div class="caja-footer">
+            <div class="fila-total">
+              <span>Total:</span>
+              <strong id="total-carrito">Bs. 0.00</strong>
+            </div>
+
+            <div class="campo-fiado">
+              <label for="cliente-fiado">Si es fiado, ¿quién lleva? (opcional)</label>
+              <input type="text" id="cliente-fiado" placeholder="Ej. Doña Martha / Vecino..." />
+            </div>
+
+            <div class="acciones-cobro">
+              <button type="button" id="btn-cobrar-contado" class="btn-exito">Cobrar al Contado</button>
+              <button type="button" id="btn-fiar" class="btn-fiado">Registrar Fiado</button>
+            </div>
+
+            <div class="acciones-cobro" style="margin-top:8px;">
+              <button type="button" id="btnMostrarQRCobro" class="btn-qr">Mostrar QR de Pago</button>
+              <button type="button" id="btn-limpiar" class="btn-secundario">Vaciar carrito</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 2: PRODUCTOS Y COSTOS -->
+    <section id="tab-productos" class="vista">
+      <div class="panel">
+        <h2>Nuevo producto</h2>
+        <form id="form-producto" class="form-producto">
+          <input type="text" id="prod-nombre" placeholder="Nombre del producto" required />
+          <input type="number" id="prod-costo" placeholder="Costo (Bs.)" step="0.01" min="0" required />
+          <input type="number" id="prod-precio" placeholder="Precio venta (Bs.)" step="0.01" min="0" required />
+          <input type="number" id="prod-stock" placeholder="Stock inicial" min="0" required />
+          <button type="submit">+ Guardar</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h2>Inventario y márgenes</h2>
+        <div class="tabla-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Costo</th>
+                <th>Precio</th>
+                <th>Ganancia/u</th>
+                <th>Stock</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-productos"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 3: VENTAS Y FIADOS -->
+    <section id="tab-reportes" class="vista">
+      <div class="tarjetas-metricas">
+        <div class="metrica">
+          <span>Total Ventas</span>
+          <strong id="rep-ventas">Bs. 0.00</strong>
+        </div>
+        <div class="metrica">
+          <span>Ganancia Estimada</span>
+          <strong id="rep-ganancia">Bs. 0.00</strong>
+        </div>
+        <div class="metrica">
+          <span>Por Cobrar (Fiados)</span>
+          <strong id="rep-fiados">Bs. 0.00</strong>
+        </div>
+      </div>
+
+      <div class="layout-reportes">
+        <div class="panel">
+          <h2>Cuentas por cobrar (Fiados)</h2>
+          <ul id="lista-fiados" class="lista-simple"></ul>
+        </div>
+
+        <div class="panel">
+          <h2>Historial de ventas</h2>
+          <ul id="lista-ventas" class="lista-simple"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- PESTAÑA 4: QR -->
+    <section id="tab-qr" class="vista">
+      <div class="layout-reportes">
+        <div class="panel">
+          <h2>Código QR de Cobro</h2>
+          <p class="prod-meta">Muestra esta pantalla al cliente para que escanee y pague.</p>
+          <p id="montoQRPestana" class="monto-qr"></p>
+
+          <div class="qr-preview-box">
+            <p id="textoSinQR" class="prod-meta">Aún no has cargado un código QR.</p>
+            <img id="imgQRConfig" alt="Código QR de la tienda" style="display: none;" />
+          </div>
+        </div>
+
+        <div class="panel card-qr-config">
+          <h2>Administrar imagen QR</h2>
+          <p class="prod-meta">Sube una imagen PNG, JPG o WEBP, o elimina el QR actual cuando lo necesites.</p>
+
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+            <input type="file" id="inputSubirQR" accept="image/png, image/jpeg, image/webp" />
+            <button type="button" id="btnEliminarQR" class="btn-eliminar">Quitar QR</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL QR DE COBRO (ACCESO RÁPIDO DESDE CAJA) -->
+  <div id="modalQR" class="modal-qr" style="display: none;">
+    <div class="modal-qr-contenido">
+      <h3>Escanea para pagar</h3>
+      <p id="montoACobrarQR" class="monto-qr"></p>
+      <img id="imgQRCobro" alt="Código QR de pago" />
+      <p id="avisoSinQRCobro" style="display: none;">No hay un QR cargado. Súbelo en la pestaña QR.</p>
+      <button type="button" id="btnCerrarModalQR" class="btn-cerrar-qr">Cerrar</button>
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
