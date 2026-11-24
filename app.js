@@ -526,13 +526,22 @@ function renderVentas() {
 
   estado.ventas.forEach((v) => {
     const anulada = v.estado === "anulada";
+    const detalleProductos =
+      Array.isArray(v.items) && v.items.length > 0
+        ? v.items
+            .map((item) => `${escaparHTML(item.nombre)} x${Math.max(0, Number(item.cantidad) || 0)}`)
+            .join(", ")
+        : escaparHTML(v.cliente || "Venta");
+
+    const tieneClienteEspecifico = v.cliente && v.cliente !== "Cliente general";
+
     const li = document.createElement("li");
     li.className = "item-fila";
     li.style.opacity = anulada ? "0.6" : "1";
     li.innerHTML = `
       <div>
-        <strong>${escaparHTML(v.cliente)}</strong> <span class="prod-meta">(${escaparHTML(v.fecha)})</span><br />
-        <small>Ganancia: ${bs(v.ganancia)}${anulada ? " · <strong>ANULADA</strong>" : ""}</small>
+        <strong>${detalleProductos}</strong> <span class="prod-meta">(${escaparHTML(v.fecha)})</span><br />
+        ${tieneClienteEspecifico ? `<small>Cliente: ${escaparHTML(v.cliente)} · </small>` : ""}<small>Ganancia: ${bs(v.ganancia)}${anulada ? " · <strong>ANULADA</strong>" : ""}</small>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <strong style="${anulada ? "text-decoration:line-through;" : ""}">${bs(v.total)}</strong>
